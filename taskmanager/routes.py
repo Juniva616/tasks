@@ -5,7 +5,8 @@ from taskmanager.models import Category, Task
 
 @app.route("/")
 def home():
-    return render_template("tasks.html")
+    tasks = list(Task.query.order_by(Task.id).all())
+    return render_template("tasks.html", tasks=tasks)
 
 
 @app.route("/categories")
@@ -23,6 +24,7 @@ def add_category():
         return redirect(url_for("categories"))
     return render_template("add_category.html")
 
+
 @app.route("/edit_category/<int:category_id>", methods=["GET", "POST"])
 def edit_category(category_id):
     category = Category.query.get_or_404(category_id)
@@ -31,6 +33,7 @@ def edit_category(category_id):
         db.session.commit()
         return redirect(url_for("categories"))
     return render_template("edit_category.html", category=category)
+
 
 @app.route("/delete_category/<int:category_id>")
 def delete_category(category_id):
@@ -47,9 +50,9 @@ def add_task():
         task = Task(
             task_name=request.form.get("task_name"),
             task_description=request.form.get("task_description"),
-            is_urgent=bool(True if request.form.get("is_urgent") else False), 
-            due_date=request.form.get("due_date"), 
-            category_id=request.form.get("category_id") 
+            is_urgent=bool(True if request.form.get("is_urgent") else False),
+            due_date=request.form.get("due_date"),
+            category_id=request.form.get("category_id")
         )
         db.session.add(task)
         db.session.commit()
